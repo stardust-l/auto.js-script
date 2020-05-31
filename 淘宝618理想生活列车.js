@@ -7,7 +7,7 @@ var app=[['com.taobao.taobao','淘宝'],['com.tmall.wireless','天猫'],['com.eg
 //'com.taobao.taobao','淘宝'
 //'com.tmall.wireless','天猫'
 //'com.eg.android.AlipayGphone','支付宝'
-var n_app=2 //从几号任务开始,从零开始计数
+var n_app=0 //从几号任务开始,从零开始计数
 var n_app_end=app.length-1//到几号停止，,从零开始计数
 var btn
 //主函数开始
@@ -20,8 +20,7 @@ function main(){
     while(true) {
         rsleep(1) 
         enter_task(app[n_app][0],app[n_app][1])
-
-        toastLog('已进入'+app[n_app][1]+'的任务界面')
+   
         if (find_btn(keyword_view)!= null) {
             //浏览任务
             view_main(keyword_view,keyword_back)
@@ -71,6 +70,7 @@ function enter_task(packagename,appname){
         text("做任务，领喵币").findOne(search_time*10).click()
         sleep(3000)
     } 
+    toastLog('已进入'+app[n_app][1]+'的任务界面')
     return true
 }
 
