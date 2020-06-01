@@ -44,7 +44,7 @@ function main(){
             while(btn=id('GameCanvas').findOne(500)){
                 btn.click()
                 gamecanvas()
-                if(text("做任务，领喵币").exits()){
+                if(!text("做任务，领喵币").exits()){
                     back()
                     rsleep(2)
                 }
