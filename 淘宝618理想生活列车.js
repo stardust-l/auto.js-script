@@ -1,16 +1,16 @@
-var i = 0 ;
-var keyword_view=['去浏览','去逛逛'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
-var keyword_only_click=['收下祝福','确认','刷新重试','弹窗关闭按钮','点击签到领喵币']//只需要点击的任务
-var keyword_one=['点击唤起淘宝','gif;base64','去兑换']//只需要完成一次的任务,且按键一直在那
+var i = 0 ,loop=0;
+var keyword_view=['去浏览'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
+var keyword_only_click=['收下祝福','确认','刷新重试','弹窗关闭按钮','点击签到领喵币','去兑换','领取奖励']//只需要点击的任务
+var keyword_one=['gif;base64','点击唤起淘宝']//只需要完成一次的任务,且按键一直在那
 var n_one=0//几号任务开始
 var keyword_back=['任务完成','任务已完成','返回领取'] //浏览界面返回的关键词，两者是或者的关系
 var n_time=5 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
-var search_time=2000 //寻找按键的最长时间 ms
+var search_time=1000 //寻找按键的最长时间 ms
 var app=[['com.taobao.taobao','淘宝'],['com.tmall.wireless','天猫'],['com.eg.android.AlipayGphone','支付宝']]
 //'com.taobao.taobao','淘宝'
 //'com.tmall.wireless','天猫'
 //'com.eg.android.AlipayGphone','支付宝'
-var n_app=0 //从几号任务开始,从零开始计数
+var n_app=0 //从几号应用开始,从零开始计数
 var n_time=2//重复打开应用次数
 var n_app_end=app.length*n_time-1//到几号停止，,从零开始计数
 var btn
@@ -38,6 +38,17 @@ function main(){
         } else if(find_btn(keyword_view)!= null) {
             //浏览任务
             view_main(keyword_view,keyword_back)
+        }else if(btn=find_btn_eq(['去收菜'])){
+            //农场收菜
+            btn.click()
+            while(btn=id('GameCanvas').findOne(500)){
+                btn.click()
+                gamecanvas()
+                if(text("做任务，领喵币").exits()){
+                    back()
+                    rsleep(2)
+                }
+            }
         }else if(n_one<keyword_one.length && (btn=find_btn([keyword_one[n_one]]))){
             //只需完成一次的任务
             n_one++
@@ -45,8 +56,17 @@ function main(){
             view(2)
         }else if(n_app<n_app_end){
             //如果不是所有的app都结束了，继续下一个
-            enter_task(app[n_app%3][0],app[n_app%3][1])
-            n_app++
+            if(loop<3){
+                //检查是否中途离开了任务界面
+                toastLog('没有发现任务，检查是否离开了任务界面')
+                enter_task(app[n_app%3][0],app[n_app%3][1])
+                loop++
+            }else{
+                loop=0
+                n_app++
+            }
+            
+            
         }else {
             //找不到满足条件的按键，返回
             toastLog("\n脚本运行完毕\n模拟浏览任务全部完成（大概）")
@@ -61,12 +81,12 @@ function enter_task(packagename,appname){
     if(currentPackage() != packagename){
         //没有打开应用的话，打开应用
         open_app(packagename,appname)
-        toastLog('-----第'+(parseInt(n_app/3)+1)+'次打开应用-----')
+        toastLog('-----第'+(parseInt(n_app/3)+1)+'次打开'+appname+'-----')
         sleep(5000)
     }
     
     
-    btn=enter_acticity()
+    btn=enter_acticity(packagename,appname)
     i=0
     while(!text("关闭").exists()){
         //进入活动界面
@@ -79,9 +99,9 @@ function enter_task(packagename,appname){
                 rsleep(2)
             }
             sleep(1000)
-            btn=enter_acticity()
+            btn=enter_acticity(packagename,appname)
             btn.click()
-        }else if(i<7){
+        }else if(i<6){
             toastLog('等待任务界面中')
             sleep(1000)
         }else{
@@ -96,27 +116,34 @@ function enter_task(packagename,appname){
     
     return true
 }
-function enter_acticity(){
+function enter_acticity(packagename,name){
     //进入活动界面
     let i=0,btn,btn2,btn3
     while(!(btn=text("做任务，领喵币").findOne(search_time*0.5))){
         //不是任务界面的话，进入任务界面
         if(btn2=descContains('搜索').findOne(search_time*0.5) ){
+            //如果在主界面，进入任务界面
             btn2.click()
-            className('android.widget.EditText').findOne(search_time).setText("618列车")
-            btn3=text('搜索').clickable(true).findOne(search_time) || desc('搜索').clickable(true).findOne(search_time)
-            btn3.click()
-            sleep(10000)//等待10s进入活动界面
+            if(btn2=className('android.widget.EditText').findOne(search_time*3)){
+                //搜索618列车，以进入活动界面
+                btn2.setText("618列车")
+                btn3=text('搜索').clickable(true).findOne(search_time) || desc('搜索').clickable(true).findOne(search_time)
+                btn3.click()
+                sleep(10000)//等待10s进入活动界面
+            }        
+            
         }else if(i%5<4){
             toastLog('未找到活动界面，第'+(i+1)+'次等待中')
-            sleep(1000)
+            sleep(1200)
             i++
-        }else if(parseInt(i/6)<3){
+        }else if(parseInt(i/5)<3){
             toastLog('等待太久，尝试返回')
             back()
-            sleep(500)
-            back()
+            //sleep(500)
+            //back()
             sleep(1000)
+            open_app(packagename,name)
+            i++
         }else{
             toast('请自己进入任务界面并重新运行脚本')
             rexit()
@@ -129,11 +156,12 @@ function open_app(packagename,name){
     name=arguments[1] ? arguments[1] : ''
     let i=0
     launch(packagename)
-    sleep(5000)
+
     while(currentPackage() != packagename){
         //还没打开的话，退出脚本
-        launch(packagename)
         sleep(2000)
+        launch(packagename)
+        
         i++
         if(i>5){
             toast('请手动打开应用'+name+'，然后重新启动程序')
@@ -174,35 +202,43 @@ function view(n,keyword){
         j++
     } 
 }
+//收菜
+function gamecanvas(){
+    x1=btn.bounds().centerX()-device.width*0.3
+    x2=btn.bounds().centerX()+device.width*0.3
+    y1=btn.bounds().centerY()-device.height*0.2
+    y2=btn.bounds().centerY()+device.height*0.3
 
+    for(var row=y1;row<y2;row+=80){
+        for(var col=x1;col<x2;col+=80){
+            click(col,row);
+        }
+    }
+    back()
+    rsleep(2)   
+}
 //找到text或者desc包含文本s的按钮并返回，找不到返回null
 function find_btn(s,judge_print){
     judge_print=arguments[1] ? arguments[1] :  0//判断是否输出日志
     let btn=null 
     for(let j=0 ;j<s.length; j++){
 
-        if(textContains(s[j]).exists() ){
-            btn = textContains(s[j]).findOnce(i) 
+        if(btn=textContains(s[j]).findOne(search_time*0.2)|| descContains(s[j]).findOne(search_time*0.2)){
             if(judge_print){
                 toastLog('找到了'+btn.parent().child(0).text()+' ，text为'+btn.text())
             }
             return btn
-        }else if(descContains(s[j]).exists() ){
-            btn = descContains(s[j]).findOnce(i) 
-            if(judge_print){
-                toastLog('找到了'+btn.parent().child(0).text()+' ，text为'+btn.text())
-            }
-            
-            return btn
+        }            
+
         }        
-    }
+
     return btn
 }
 function find_btn_eq(s){
     //找到拥有完全相同text或desc的按钮
     var btn
     for(let j=0 ;j<s.length; j++){
-        if(btn=text(s[j]).findOne(500)||desc(s[j]).findOne(500)){
+        if(btn=text(s[j]).findOne(search_time*0.1)||desc(s[j]).findOne(search_time*0.1)){
             return btn
         }
     }
