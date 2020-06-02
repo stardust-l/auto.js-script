@@ -79,6 +79,7 @@ function main(){
             //淘宝人生，按键位置需要根据自己手机调整
 
             i_taobaolife++
+            
             current_activity,
             btn.click()
             sleep(10000)
