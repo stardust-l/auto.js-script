@@ -16,6 +16,7 @@ var n_app=0 //从几号应用开始,从零开始计数
 var n_time_app=2//重复打开应用次数
 var n_app_end=app_task.length*n_time_app-1//到几号停止，,从零开始计数
 var btn
+
 var i = 0 ,loop=0,i_taobaolife=0,i_taobaofarm=0;
 
 //主函数开始
