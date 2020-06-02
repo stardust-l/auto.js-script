@@ -17,35 +17,11 @@ var n_time_app=2//重复打开应用次数
 var n_app_end=app_task.length*n_time_app-1//到几号停止，,从零开始计数
 var btn
 var i = 0 ,loop=0,i_taobaolife=0,i_taobaofarm=0;
-var password='lookskypetan173205'
-//主函数开始
-unlock(password)
-main()
-//解锁
 
-function unlock(p){
-    //息屏状态下解锁
-    if(!p){
-        //导入密码为空，返回
-        return 0
-    }
-    if(device.isScreenOn()){
-        return 0       
-    }
-    toastLog('解锁')
-    if(!device.isScreenOn()){
-        device.wakeUp()
-    }
-    for(let i=0;i<2;i++){
-        swipe(device.width*0.5,device.height*0.9,device.width*0.5,device.height*0.1,1000);
-    }
-    sleep(1000)
-    for(let i=0;i<p.length;i++){
-        text(p[i]).click()
-    }
-    //textContains('').click()
-    click(device.width*0.85,device.height*0.85)
-} 
+//主函数开始
+main()
+
+
 
 function main(){
     //主函数
