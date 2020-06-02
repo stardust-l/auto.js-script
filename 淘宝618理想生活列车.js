@@ -91,7 +91,7 @@ function main(){
             btn.click()
             toastLog('进入农场')
             sleep(8000)
-            while(btn=text('').findOne(1000) || id('GameCanvas').findOne(500)){
+            while(btn=text('天猫农场').findOne(1000) || id('GameCanvas').findOne(500)){
                 gamecanvas()
             }
             sleep(1000)
