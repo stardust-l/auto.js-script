@@ -80,7 +80,6 @@ function main(){
 
             i_taobaolife++
             
-            current_activity,
             btn.click()
             sleep(10000)
             toastLog('进入淘宝人生中')
@@ -274,7 +273,7 @@ function gamecanvas(){
     x1=btn.bounds().centerX()-device.width*0.3
     x2=btn.bounds().centerX()+device.width*0.3
     y1=btn.bounds().centerY()-device.height*0.2
-    y2=btn.bounds().centerY()+device.height*0.3
+    y2=btn.bounds().centerY()+device.height*0.2
 
     for(var row=y1;row<y2;row+=80){
         for(var col=x1;col<x2;col+=80){
