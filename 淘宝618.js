@@ -1,4 +1,4 @@
-var keyword_view=['去浏览'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
+var keyword_view=['去浏览','去观看'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
 var keyword_only_click=['签到','收下祝福','确认','刷新重试','弹窗关闭按钮','点击签到领喵币','去兑换','领取奖励']//只需要点击的任务
 var keyword_one=['gif;base64','点击唤起淘宝']//只需要完成一次的任务,且按键一直在那
 var n_one=0//只需要完成一次的任务,从几号任务开始
@@ -272,7 +272,7 @@ function view(n,keyword){
 function gamecanvas(){
     x1=btn.bounds().centerX()-device.width*0.3
     x2=btn.bounds().centerX()+device.width*0.3
-    y1=btn.bounds().centerY()-device.height*0.2
+    y1=btn.bounds().centerY()-device.height*0.15
     y2=btn.bounds().centerY()+device.height*0.2
 
     for(var row=y1;row<y2;row+=80){
