@@ -4,7 +4,7 @@ var keyword_one=['gif;base64','点击唤起淘宝']//只需要完成一次的任
 var n_one=0//只需要完成一次的任务,从几号任务开始
 
 var keyword_same='领取任务'//名称相同的任务
-var i_same=0,i_same_max=7//名称相同的任务最多进行几次，防止卡住 
+var i_same=0,i_same_max=3//防止一直进行同一个任务,同一个任务执行上限
 var keyword_back=['任务完成','任务已完成','返回领取'] //浏览界面返回的关键词，两者是或者的关系
 var n_time=4 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
 var search_time=1000 //寻找按键的最长时间 ms
@@ -17,11 +17,9 @@ var n_time_app=2//重复打开应用次数
 var n_app_end=app_task.length*n_time_app-1//到几号停止，,从零开始计数
 var btn
 var i = 0 ,loop=0,i_taobaolife=0,i_taobaofarm=0;
-
 //主函数开始
 main()
-
-
+//解锁
 
 function main(){
     //主函数
@@ -44,15 +42,17 @@ function main(){
         } else if(find_btn(keyword_view)!= null) {
             //浏览任务
             view_main(keyword_view,keyword_back)
-        }else if(i_same<i_same_max && (btn=text(keyword_same).findOnce(1)) ){
+        }else if(i_same<i_same_max && (btn=text(keyword_same).findOnce(parseInt(i_same/(i_same_max-1)))) ){
             btn.click()
+            
             view(2)
             //防止多次进入同一个活动
             if(activity_game!=currentActivity()){
                 activity_game=currentActivity()
-            }else{
+            }else{                
                 toastLog('重复进入了'+activity_game)
                 i_same++
+
             }
             back()
             sleep(1000)
@@ -60,8 +60,8 @@ function main(){
                 rsleep(1)
                 back()                
             }
-            i_same++
-        }else if(i_taobaofarm<3 && (btn=find_btn_eq(['去收菜'])) ){
+            
+        }else if(i_taobaofarm<i_same_max && (btn=find_btn_eq(['去收菜'])) ){
             //农场收菜
             i_taobaofarm++
             btn.click()
@@ -75,11 +75,11 @@ function main(){
                 rsleep(1)
                 back()                
             }
-        }else if(i_taobaolife<3 && (btn=find_btn_eq(['去逛逛'])) ){
+        }else if(i_taobaolife<i_same_max && (btn=find_btn_eq(['去逛逛'])) ){
             //淘宝人生，按键位置需要根据自己手机调整
 
             i_taobaolife++
-            
+
             btn.click()
             sleep(10000)
             toastLog('进入淘宝人生中')
@@ -98,6 +98,10 @@ function main(){
             n_one++
             btn.click()
             view(2)
+            if(!text("做任务，领喵币").exists()){
+                rsleep(1)
+                back()                
+            }
         }else if(n_app<=n_app_end){
             //如果不是所有的app都结束了，继续下一个
             if(loop<3){
@@ -228,8 +232,8 @@ function open_app(packagename,name){
         
         k++
         if(k>5){
-            toast('请手动打开应用'+name+'，然后重新启动程序')
-            rexit()
+            toast('无法打开'+name+'，开始下一个')
+            return 0
         }
 
     }
