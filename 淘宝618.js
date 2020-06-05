@@ -18,8 +18,33 @@ var n_app_end=app_task.length*n_time_app-1//到几号停止，,从零开始计�
 var btn
 var i = 0 ,loop=0,i_taobaolife=0,i_taobaofarm=0;
 //主函数开始
+
 main()
-//解锁
+
+
+function unlock(p){
+    //息屏状态下解锁
+    if(!p){
+        //导入密码为空，返回
+        return 0
+    }
+    if(device.isScreenOn()){
+        return 0       
+    }
+    toastLog('解锁')
+    if(!device.isScreenOn()){
+        device.wakeUp()
+    }
+    for(let i=0;i<2;i++){
+        swipe(device.width*0.5,device.height*0.9,device.width*0.5,device.height*0.1,1000);
+    }
+    sleep(1000)
+    for(let i=0;i<p.length;i++){
+        text(p[i]).click()
+    }
+    //textContains('').click()
+    click(device.width*0.85,device.height*0.85)
+} 
 
 function main(){
     //主函数
@@ -42,18 +67,20 @@ function main(){
         } else if(find_btn(keyword_view)!= null) {
             //浏览任务
             view_main(keyword_view,keyword_back)
-        }else if(i_same<i_same_max && (btn=text(keyword_same).findOnce(parseInt(i_same/(i_same_max-1)))) ){
+        }else if( btn=text(keyword_same).findOnce(parseInt(i_same/i_same_max)) ){
             btn.click()
             
-            view(2)
+            view(1)
             //防止多次进入同一个活动
             if(activity_game!=currentActivity()){
                 activity_game=currentActivity()
+                toastLog('进入了'+activity_game)
             }else{                
                 toastLog('重复进入了'+activity_game)
-                i_same++
+            i_same++
 
             }
+            i_same++
             back()
             sleep(1000)
             if(!text("做任务，领喵币").exists()){
@@ -111,6 +138,7 @@ function main(){
                 loop++
             }else{
                 loop=0
+                i_same=0
                 n_app++
             }
             
