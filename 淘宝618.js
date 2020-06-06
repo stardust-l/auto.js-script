@@ -6,7 +6,7 @@ var n_one=0//只需要完成一次的任务,从几号任务开始
 var keyword_same='领取任务'//名称相同的任务
 var i_same=0,i_same_max=3//防止一直进行同一个任务,同一个任务执行上限
 var keyword_back=['任务完成','任务已完成','返回领取'] //浏览界面返回的关键词，两者是或者的关系
-var n_time=4 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
+var n_time=5 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
 var search_time=1000 //寻找按键的最长时间 ms
 var app_task=[['com.taobao.taobao','淘宝'],['com.tmall.wireless','天猫'],['com.eg.android.AlipayGphone','支付宝']]
 //'com.taobao.taobao','淘宝'
