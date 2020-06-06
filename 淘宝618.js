@@ -64,7 +64,7 @@ function main(){
                 click(btn.bounds().centerX(),btn.bounds().centerY())
             }
 
-        } else if(find_btn(keyword_view)!= null) {
+        } else if(find_btn(keyword_view)!= null && text("做任务，领喵币").exists()) {
             //浏览任务
             view_main(keyword_view,keyword_back)
         }else if( btn=text(keyword_same).findOnce(parseInt(i_same/i_same_max)) ){
