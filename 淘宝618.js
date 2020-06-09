@@ -6,7 +6,7 @@ var n_one=0//只需要完成一次的任务,从几号任务开始
 var keyword_same='领取任务'//名称相同的任务
 var i_same=0,i_same_max=3//防止一直进行同一个任务,同一个任务执行上限
 var keyword_back=['任务完成','任务已完成','返回领取'] //浏览界面返回的关键词，两者是或者的关系
-var n_time=5 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
+var n_time=4 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
 var search_time=1000 //寻找按键的最长时间 ms
 var app_task=[['com.taobao.taobao','淘宝'],['com.tmall.wireless','天猫'],['com.eg.android.AlipayGphone','支付宝']]
 //'com.taobao.taobao','淘宝'
@@ -21,33 +21,8 @@ var i = 0 ,loop=0,i_taobaolife=0,i_taobaofarm=0;
 
 main()
 
-
-function unlock(p){
-    //息屏状态下解锁
-    if(!p){
-        //导入密码为空，返回
-        return 0
-    }
-    if(device.isScreenOn()){
-        return 0       
-    }
-    toastLog('解锁')
-    if(!device.isScreenOn()){
-        device.wakeUp()
-    }
-    for(let i=0;i<2;i++){
-        swipe(device.width*0.5,device.height*0.9,device.width*0.5,device.height*0.1,1000);
-    }
-    sleep(1000)
-    for(let i=0;i<p.length;i++){
-        text(p[i]).click()
-    }
-    //textContains('').click()
-    click(device.width*0.85,device.height*0.85)
-} 
-
 function main(){
-    //主函数
+    //做任务
     var activity_game
     auto.waitFor()
     console.show()
@@ -110,6 +85,7 @@ function main(){
             btn.click()
             sleep(10000)
             toastLog('进入淘宝人生中')
+            text('淘宝人生').findOne(20000)
             click(device.width*0.9,device.height*0.7)//领取喵币
             rsleep(2)
             click(device.width*0.5,device.height*0.65)//确认领取
@@ -125,6 +101,7 @@ function main(){
             n_one++
             btn.click()
             view(2)
+            back()
             if(!text("做任务，领喵币").exists()){
                 rsleep(1)
                 back()                
@@ -302,8 +279,15 @@ function view(n,keyword){
 }
 //收菜
 function gamecanvas(){
-    x1=btn.bounds().centerX()-device.width*0.3
-    x2=btn.bounds().centerX()+device.width*0.3
+    if(text("兑换专享好券").exists() && text('更多').exists()){
+        toastLog('找到参考控件')
+        x1=text("兑换专享好券").findOnce(0).bounds().right
+        x2=text('更多').findOnce(0).bounds().left
+    }else{
+        x1=btn.bounds().centerX()-device.width*0.25
+        x2=btn.bounds().centerX()+device.width*0.25
+    }
+
     y1=btn.bounds().centerY()-device.height*0.15
     y2=btn.bounds().centerY()+device.height*0.2
 
