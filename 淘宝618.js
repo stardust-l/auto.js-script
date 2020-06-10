@@ -1,3 +1,9 @@
+var GatherBtn = className("android.view.View").text("立即去收").findOnce();
+if (GatherBtn) {
+    var GatherBtnBounds = GatherBtn.bounds();
+    click(GatherBtnBounds.centerX(), GatherBtnBounds.centerY());
+    sleep(2000);
+}
 var keyword_view=['去浏览','去观看'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
 var keyword_only_click=['签到','收下祝福','确认','刷新重试','弹窗关闭按钮','点击签到领喵币','去兑换','领取奖励']//只需要点击的任务
 var keyword_one=['gif;base64','点击唤起淘宝']//只需要完成一次的任务,且按键一直在那
@@ -68,10 +74,8 @@ function main(){
             i_taobaofarm++
             btn.click()
             toastLog('进入农场')
-            sleep(8000)
-            while(btn=text('天猫农场').findOne(1000) || id('GameCanvas').findOne(500)){
-                gamecanvas()
-            }
+            sleep(5000)
+            gamecanvas()
             sleep(1000)
             if(!text("做任务，领喵币").exists()){
                 rsleep(1)
@@ -86,6 +90,8 @@ function main(){
             sleep(10000)
             toastLog('进入淘宝人生中')
             text('淘宝人生').findOne(20000)
+            toastLog('等待签到界面中')
+            rsleep(5)
             click(device.width*0.9,device.height*0.7)//领取喵币
             rsleep(2)
             click(device.width*0.5,device.height*0.65)//确认领取
@@ -282,6 +288,22 @@ function view(n,keyword){
 }
 //收菜
 function gamecanvas(){
+    var btn=textContains('TB1ECFDJKL2').findOne(3000)
+    rclick_by_btn(btn)
+    sleep(10000)
+
+    btn=text('天猫农场').findOne(2000)
+    if(!btn){
+        return 0
+    }
+
+    var GatherBtn = className("android.view.View").text("立即去收").findOnce();
+    if (GatherBtn) {
+        var GatherBtnBounds = GatherBtn.bounds();
+        click(GatherBtnBounds.centerX(), GatherBtnBounds.centerY());
+        sleep(2000);
+    }
+
     if(text("兑换专享好券").exists() && text('更多').exists()){
         toastLog('找到参考控件')
         x1=text("兑换专享好券").findOnce(0).bounds().right
@@ -361,6 +383,7 @@ function rslideR(i) {
     }
 }
 function rclick(s){
+    //根据文本找到按钮并点击
     let btn
     if(btn=textContains(s).findOne(search_time*0.25) || descContains(s).findOne(search_time*0.25)){
         if(btn.clickable()){
@@ -370,7 +393,17 @@ function rclick(s){
         }
     }
 }
-
+function rclick_by_btn(btn){
+    //点击按钮
+    if(!btn){
+        return -1
+    }
+    if(btn.clickable()){
+        btn.click()
+    }else{
+        click(btn.bounds().centerX(),btn.bounds().centerY())
+    }
+}
 function appclose(packageName) {
     //关闭应用
     var name = getPackageName(packageName); 
