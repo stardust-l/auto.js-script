@@ -1,9 +1,3 @@
-var GatherBtn = className("android.view.View").text("立即去收").findOnce();
-if (GatherBtn) {
-    var GatherBtnBounds = GatherBtn.bounds();
-    click(GatherBtnBounds.centerX(), GatherBtnBounds.centerY());
-    sleep(2000);
-}
 var keyword_view=['去浏览','去观看'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
 var keyword_only_click=['签到','收下祝福','确认','刷新重试','弹窗关闭按钮','点击签到领喵币','去兑换','领取奖励']//只需要点击的任务
 var keyword_one=['gif;base64','点击唤起淘宝']//只需要完成一次的任务,且按键一直在那
