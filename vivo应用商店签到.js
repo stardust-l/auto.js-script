@@ -9,10 +9,20 @@ main()
 
 
 function main(){
-    let i=3
     console.show()
+    sign_in()//签到
+    browser_task()//浏览器任务
+
+    toastLog('已完成，退出中')
+    sleep(2000)
+    console.hide()
+}
+function sign_in(){
+    //签到
+    toastLog('开始签到任务')
     enter_sign_in()
-    while(btn=text('去签到').findOne(search_time*5)){
+    var btn
+    while(btn=text('去签到').findOne(search_time*2)){
         let i=3
         enter_sign_in()
         rclick_by_btn(btn)
@@ -31,11 +41,65 @@ function main(){
         }
         enter_sign_in()
     }
-    toastLog('已完成，退出中')
-    sleep(2000)
-    console.hide()
+    toastLog('完成签到任务')
 }
+function browser_task(){
+    //浏览器任务
+    toastLog('开始浏览器任务')   
+    var btn
 
+    enter_browser_task()
+    if(btn=textStartsWith('用搜索框').findOne(search_time*5)){
+        //搜索任务
+        toastLog(btn.text())
+        while(btn.parent().child(1).text()!='已完成'){
+            //若搜索任务未完成，继续完成
+            rclick_by_btn(btn.parent().parent().child(2))
+            rsleep(2)
+            if(btn=className('android.widget.EditText').findOne(search_time*0.5)){
+                //开始搜索
+                btn.setText("积分")
+                sleep(1000)
+                btn=id('search_btn_wrapper').clickable(true)
+                btn.click()
+                sleep(3000)//等待10s进入活动界面
+            } 
+            enter_browser_task()
+        }
+        rclick_by_btn(btn.parent().parent().child(2))
+
+    }
+    toastLog('完成浏览器任务')
+}
+function enter_browser_task(){
+    var btn,k=6,packagename='com.vivo.browser'
+    toastLog('开始进入任务界面')
+    while(k--){
+        open_app(packagename)
+        if(!text('每日任务').exists()){
+            if(btn=text('做任务赚积分').findOne(search_time*0.2)){            
+                toastLog('text'+btn.text())
+                btn.parent().click()
+                break
+            }else{
+                if(btn=id('btn_text').text('我的').findOne(search_time*0.2)){
+                    toastLog('进入浏览器我的界面')
+                    rclick_by_btn(btn)
+                    rsleep(3)
+                }else if(btn=id('tool_bar_btn_home').findOne(search_time*0.2)){
+                    toastLog('进入浏览器主界面')
+                    btn.click()
+                    rsleep(3)
+                }
+            }
+        }
+
+    }
+    if(!k){
+        toastLog('找不到任务界面，退出')
+        exit()
+    }  
+}
 function enter_sign_in(){
     //进入签到界面
     let btn,k=6
@@ -58,7 +122,7 @@ function enter_sign_in(){
         }
     }
     if(!k){
-        toastLog('找不到人物界面，退出')
+        toastLog('找不到任务界面，退出')
         exit()
     }
 
@@ -75,7 +139,7 @@ function open_app(packagename){
         k++
         if(k>5){
             toast('请手动打开应用'+getAppName(packageName)+'，然后重新启动程序')
-            rexit()
+            exit()
         }
 
     }
