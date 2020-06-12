@@ -217,7 +217,7 @@ function click_by_color(color){
     //找到对应颜色的区域，并点击 
     img = getCaptureImg()
     var point = findColor(img,color, {
-        region: [device.width*0.2, device.height*0.4, device.width*0.75, device.height*0.55],
+        region: [device.width*0.4, device.height*0.5, device.width*0.55, device.height*0.45],
         threshold: 2
     })
     if(point){
@@ -286,7 +286,7 @@ function enter_acticity(packagename,name){
                 btn2.parent().click()
                 sleep(10000)//等待10s进入活动界面
             }else{
-                if(btn2=className('android.widget.EditText').findOne(search_time*3)){
+                if(btn2=className('android.widget.EditText').findOne(search_time*1)){
                     //搜索618列车，以进入活动界面
                     btn2.setText("618列车")
                     btn3=text('搜索').clickable(true).findOne(search_time) || desc('搜索').clickable(true).findOne(search_time)
@@ -311,14 +311,6 @@ function enter_acticity(packagename,name){
                 toastLog('点击618列车')
                 btn2.parent().click()
                 sleep(10000)//等待10s进入活动界面
-            }else{
-                if(btn2=className('android.widget.EditText').findOne(search_time*1)){
-                    //搜索618列车，以进入活动界面
-                    btn2.setText("618列车")
-                    btn3=text('搜索').clickable(true).findOne(search_time) || desc('搜索').clickable(true).findOne(search_time)
-                    btn3.click()
-                    sleep(10000)//等待10s进入活动界面
-                } 
             }        
             i++
         }else if(parseInt(i/7)<4){
