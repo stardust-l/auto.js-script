@@ -1,11 +1,11 @@
-var keyword_view=['去浏览','去观看'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
+var keyword_view=['去浏览','去完成'] //浏览任务包含关键词，中间用逗号隔开，几个是或者的关系，满足任意一个即可
 var keyword_only_click=['签到','收下祝福','确认','刷新重试','弹窗关闭按钮','点击签到领喵币','去兑换','领取奖励']//只需要点击的任务
-var keyword_one=['TB1Y2','点击唤起淘宝']//只需要完成一次的任务,且按键一直在那
+var keyword_one=['gif;base64','点击唤起淘宝']//只需要完成一次的任务,且按键一直在那
 var n_one=0//只需要完成一次的任务,从几号任务开始
 
 var keyword_same='领取任务'//名称相同的任务
 var i_same=0,i_same_max=3//防止一直进行同一个任务,同一个任务执行上限
-var keyword_back=['任务完成','任务已完成','返回领取'] //浏览界面返回的关键词，两者是或者的关系
+var keyword_back=['任务完成','任务已完成','返回领取','任务失败'] //浏览界面返回的关键词，两者是或者的关系
 var n_time=6 //在浏览界面循环滑动次数上限（再多就返回了），一次大概5到7秒
 var search_time=1000 //寻找按键的最长时间 ms
 var app_task=[['com.taobao.taobao','淘宝'],['com.tmall.wireless','天猫'],['com.eg.android.AlipayGphone','支付宝']]
@@ -17,11 +17,68 @@ var n_time_app=2//重复打开应用次数
 var n_app_end=app_task.length*n_time_app-1//到几号停止，,从零开始计数
 var btn
 var i = 0 ,loop=0,i_taobaolife=0,i_taobaofarm=0;
+var password='111111'//锁屏密码
 //主函数开始
+var now =new Date()
+var star_time=0*60+3
 
-main()
+take_task()//做任务
+rexit()
+//main()//用于定时执行
 
 function main(){
+    var count_times=3,wait_time
+    var gap=60
+    
+    while(count_times--){
+        while(now.getHours()*60+now.getMinutes()>=star_time){
+            //等到第二天才开始
+            wait_time=(24*60+star_time-now.getHours()*60-now.getMinutes())*10+1
+            toastLog("等待时间"+wait_time+'s')
+            sleep(wait_time*1000)
+            now =new Date()
+        }
+        while(now.getHours()*60+now.getMinutes()<star_time){
+            //一直等到任务开始
+            wait_time=(star_time-now.getHours()*60-now.getMinutes())*10+1
+            toastLog("等待时间"+wait_time+'s')
+            sleep(wait_time*1000)
+            
+            now =new Date()
+        }
+        unlock(password)
+        take_task()
+        star_time+=gap
+    }
+
+}
+//解锁
+
+function unlock(p){
+    //息屏状态下解锁
+    if(!p){
+        //导入密码为空，返回
+        return 0
+    }
+    if(device.isScreenOn()){
+        return 0       
+    }
+    toastLog('解锁')
+    if(!device.isScreenOn()){
+        device.wakeUp()
+    }
+    for(let i=0;i<2;i++){
+        swipe(device.width*0.5,device.height*0.9,device.width*0.5,device.height*0.1,1000);
+    }
+    sleep(1000)
+    for(let i=0;i<p.length;i++){
+        text(p[i]).click()
+    }
+    //textContains('').click()
+    click(device.width*0.85,device.height*0.85)
+} 
+
+function take_task(){
     //做任务
     var activity_game
     auto.waitFor()
@@ -39,9 +96,12 @@ function main(){
                 click(btn.bounds().centerX(),btn.bounds().centerY())
             }
 
-        } else if(find_btn(keyword_view)!= null && text("做任务，领喵币").exists()) {
+        }else if(find_btn(keyword_view)!= null && text("做任务，领喵币").exists()) {
             //浏览任务
             view_main(keyword_view,keyword_back)
+        }else if(text('去观看').exists() && text("做任务，领喵币").exists()) {
+            //观看任务
+            view_main(['去观看'],keyword_back,undefined,8,0,0)
         }else if( btn=text(keyword_same).findOnce(parseInt(i_same/i_same_max)) ){
             btn.click()
             
@@ -124,7 +184,8 @@ function main(){
             //找不到满足条件的按键，返回
             toastLog("\n脚本运行完毕\n模拟浏览任务全部完成（大概）")
             sleep(5000)
-            rexit()
+            return 0
+            //rexit()
         }
     }
 }
@@ -198,7 +259,7 @@ function enter_acticity(packagename,name){
             
         }else if(i%7<6){
             toastLog('未找到活动界面，第'+(i+1)+'次等待中')
-            sleep(3000)
+            sleep(2000)
             i++
         }else if(parseInt(i/7)<3){
             open_app(packagename,name)
@@ -207,7 +268,19 @@ function enter_acticity(packagename,name){
             //sleep(500)
             //back()
             sleep(1000)
-            
+            if(btn2=text('618列车').findOne(search_time*2)){
+                toastLog('点击618列车')
+                btn2.parent().click()
+                sleep(10000)//等待10s进入活动界面
+            }else{
+                if(btn2=className('android.widget.EditText').findOne(search_time*1)){
+                    //搜索618列车，以进入活动界面
+                    btn2.setText("618列车")
+                    btn3=text('搜索').clickable(true).findOne(search_time) || desc('搜索').clickable(true).findOne(search_time)
+                    btn3.click()
+                    sleep(10000)//等待10s进入活动界面
+                } 
+            }        
             i++
         }else if(parseInt(i/7)<4){
             //尝试重启应用
@@ -250,23 +323,30 @@ function enter_tianmao(){
     toastLog('待完成')
 }   
 //模拟浏览（浏览会场任务），存在按键返回1，否则返回0,judge_back为是否在浏览后返回
-function view_main(keyword_view,keyword_back,judge_back,n,i){
+function view_main(keyword_view,keyword_back,judge_back,n,i,n_slide){
     judge_back=arguments[2] ? arguments[2] : 1//judge_back默认为1，即默认在浏览后返回
     n=arguments[3] ? arguments[3] : n_time
     i=arguments[4] ? arguments[4] : 0//选取第几个按键
+    if(arguments[5]==undefined){
+        n_slide=2
+    }else{
+        n_slide=arguments[5]
+    }
+    
     
     let btn=find_btn(keyword_view,1,i)
         btn.click()
-        view(n)
+        view(n,keyword_back,n_slide)
         if(judge_back){
             toastLog('返回任务界面')
             back()
         }
 }
 //浏览
-function view(n,keyword){
+function view(n,keyword,n_slide){
     n=arguments[0] ? arguments[0] :n_time
     keyword=arguments[1] ? arguments[1] :keyword_back
+    n_slide=arguments[2] ? arguments[2] :2
     let j=0
     while(j<n){
         if(find_btn(keyword)!=null){
@@ -274,9 +354,9 @@ function view(n,keyword){
             return 0
         }
         rsleep(1) 
-        rslide(2) 
+        rslide(n_slide) 
         rsleep(1) 
-        rslideR(1)         
+        rslideR(n_slide-1)         
         j++
     } 
 }
@@ -355,6 +435,10 @@ function rsleep(n) {
 
 //随机向下划屏，持续1.2s-1.5s
 function rslide(i) {
+    if(i<=0){
+        rsleep(1)
+        return -1
+    }
     while (i--) {
         let x1 = random(device.width*0.4, device.width*0.6) 
         let y1 = random(device.height*0.7, device.height*0.9) 
@@ -366,6 +450,10 @@ function rslide(i) {
 }
 //随机向上划屏，持续1.2s-1.5s
 function rslideR(i) {
+    if(i<=0){
+        rsleep(1)
+        return -1
+    }
     while (i--) {
         let x1 = random(device.width*0.4, device.width*0.6) 
         let y1 = random(device.height*0.4, device.height*0.6) 
