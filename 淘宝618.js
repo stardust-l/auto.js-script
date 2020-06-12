@@ -83,6 +83,7 @@ function take_task(){
     var activity_game
     auto.waitFor()
     console.show()
+    prepareThings()//请求截图权限
 
     while(true) {
           
@@ -146,15 +147,15 @@ function take_task(){
             text('淘宝人生').findOne(20000)
             toastLog('等待签到界面中')
             rsleep(5)
-            click(device.width*0.9,device.height*0.7)//领取喵币
+            click_by_color("#FF9A67")//领取喵币
             rsleep(2)
-            click(device.width*0.5,device.height*0.65)//确认领取
+            click_by_color("#FF8544")//确认领取
             back()
             rsleep(1)
             back()
             rsleep(2)
             toastLog('等待返回')
-            click(device.width*0.5,device.height*0.6)//返回
+            click_by_color("#FF8544")//返回
 
         }else if(n_one<keyword_one.length && (btn=find_btn([keyword_one[n_one]]))){
             //只需完成一次的任务
@@ -188,6 +189,44 @@ function take_task(){
             //rexit()
         }
     }
+}
+function prepareThings(){
+    //请求截图权限
+    setScreenMetrics(device.width, device.height);
+    //toastLog("test1");
+    //请求截图
+    if(!requestScreenCapture()){
+        toastLog("请求截图失败,脚本退出");
+        exit();
+    }
+    sleep(3000);
+    //toastLog("test2");
+}
+function getCaptureImg(){    
+    //截图
+    var img0 = captureScreen();
+    sleep(100);
+    if(img0==null || typeof(img0)=="undifined"){
+        toastLog("截图失败,脚本退出");
+        exit();
+    }else{
+       return img0;
+    }
+}
+function click_by_color(color){
+    //找到对应颜色的区域，并点击 
+    img = getCaptureImg()
+    var point = findColor(img,color, {
+        region: [device.width*0.2, device.height*0.4, device.width*0.75, device.height*0.55],
+        threshold: 2
+    })
+    if(point){
+        toastLog("找到对颜色坐标，为(" + point.x + ", " + point.y + ")")
+        click(point.x,point.y)
+    }else{
+        toastLog('未找到')
+    }
+    sleep(1000)
 }
 function enter_task(packagename,appname){
     //进入618活动的任务界面,并领取自动产生的喵币
