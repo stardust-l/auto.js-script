@@ -377,7 +377,9 @@ function view_main(keyword_view,keyword_back,judge_back,n,i,n_slide){
 function view(n,keyword,n_slide){
     n=arguments[0] ? arguments[0] :n_time
     keyword=arguments[1] ? arguments[1] :keyword_back
-    n_slide=arguments[2] ? arguments[2] :2
+    if(n_slide==undefined){
+        n_slide=2
+    }
     let j=0
     while(j<n){
         if(find_btn(keyword)!=null){
